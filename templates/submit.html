@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Village Problem Portal - Submit Issue</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <h1>🏘️ Village Problem Portal</h1>
+                <p>Report an issue affecting your village</p>
+            </div>
+
+            <form id="problemForm" method="POST" action="/submit">
+                <div class="form-group">
+                    <label for="name">Your Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    <span class="error-message" id="nameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" name="category" required>
+                        <option value="">-- Select a category --</option>
+                        {% for category in categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="error-message" id="categoryError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Problem Description *</label>
+                    <textarea id="description" name="description" rows="5" required placeholder="Describe the problem in detail..."></textarea>
+                    <span class="error-message" id="descriptionError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="contact">Contact Information (Phone/Email) *</label>
+                    <input type="text" id="contact" name="contact" required placeholder="Your phone number or email">
+                    <span class="error-message" id="contactError"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Submit Problem</button>
+                    <button type="reset" class="btn btn-secondary">Clear Form</button>
+                </div>
+
+                <div id="successMessage" class="success-message" style="display: none;">
+                    ✓ Your problem has been submitted successfully! Thank you for reporting.
+                </div>
+                <div id="errorMessage" class="error-alert" style="display: none;"></div>
+            </form>
+
+            <div class="footer-link">
+                <a href="/admin">View Submitted Problems (Admin)</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+</body>
+</html>
