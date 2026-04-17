@@ -122,4 +122,4 @@ def delete_problem(problem_id):
     db.session.delete(problem)
     db.session.commit()
     
-    return jsonify({'success': True, 'message': 'Problem deleted successfully'})
+    return jsonify({'success': True, 'message': 'Probhhlem deleted successfully'})
