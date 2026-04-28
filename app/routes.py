@@ -38,12 +38,17 @@ def submit_problem():
     if not all([data.get('name'), data.get('category'), data.get('description'), data.get('contact')]):
         return jsonify({'success': False, 'message': 'All fields are required'}), 400
     
+    # Check if user wants to submit to Jansunwai
+    submit_to_jansunwai = data.get('submit_to_jansunwai') == 'yes'
+    
     # Create new problem record
     problem = Problem(
         name=data.get('name').strip(),
         category=data.get('category'),
         description=data.get('description').strip(),
-        contact=data.get('contact').strip()
+        contact=data.get('contact').strip(),
+        submitted_to_jansunwai=submit_to_jansunwai,
+        jansunwai_link='https://jansunwai.up.nic.in/' if submit_to_jansunwai else None
     )
     
     try:

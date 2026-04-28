@@ -14,7 +14,12 @@
                     <h1>📊 Admin Dashboard</h1>
                     <p>Total Problems: <strong>{{ total }}</strong></p>
                 </div>
-                <a href="{{ url_for('main.admin_logout') }}" class="btn btn-danger">Logout</a>
+                <div style="display: flex; gap: 10px;">
+                    <a href="https://jansunwai.up.nic.in/" target="_blank" class="btn btn-primary">
+                        📋 Jansunwai Portal
+                    </a>
+                    <a href="{{ url_for('main.admin_logout') }}" class="btn btn-danger">Logout</a>
+                </div>
             </div>
             <a href="/" class="btn btn-secondary">Back to Form</a>
         </div>
@@ -56,6 +61,7 @@
                         <th>Description</th>
                         <th>Contact</th>
                         <th>Status</th>
+                        <th>Jansunwai</th>
                         <th>Date</th>
                         <th>Actions</th>
                     </tr>
@@ -74,6 +80,14 @@
                                 <option value="In Progress" {% if problem.status == 'In Progress' %}selected{% endif %}>In Progress</option>
                                 <option value="Resolved" {% if problem.status == 'Resolved' %}selected{% endif %}>Resolved</option>
                             </select>
+                        </td>
+                        <td>
+                            {% if problem.submitted_to_jansunwai %}
+                                <span style="color: green; font-weight: bold;">✓ Yes</span>
+                                <br><a href="https://jansunwai.up.nic.in/" target="_blank" style="font-size: 12px; color: #667eea;">View</a>
+                            {% else %}
+                                <span style="color: #999;">-</span>
+                            {% endif %}
                         </td>
                         <td>{{ problem.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>

@@ -15,6 +15,8 @@ class Problem(db.Model):
     description = db.Column(db.Text, nullable=False)
     contact = db.Column(db.String(120), nullable=False)
     status = db.Column(db.String(20), default='New')  # New, In Progress, Resolved
+    submitted_to_jansunwai = db.Column(db.Boolean, default=False)
+    jansunwai_link = db.Column(db.String(255), nullable=True)  # Link to Jansunwai complaint
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def __repr__(self):
@@ -29,5 +31,7 @@ class Problem(db.Model):
             'description': self.description,
             'contact': self.contact,
             'status': self.status,
+            'submitted_to_jansunwai': self.submitted_to_jansunwai,
+            'jansunwai_link': self.jansunwai_link,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
         }
