@@ -4,6 +4,8 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 from functools import wraps
 from app import db
 from app.models import Problem
+import traceback
+import sys
 
 main_bp = Blueprint('main', __name__)
 
@@ -32,32 +34,34 @@ def index():
 @main_bp.route('/submit', methods=['POST'])
 def submit_problem():
     """Handle problem submission from villagers."""
-    data = request.form
-    
-    # Validate form data
-    if not all([data.get('name'), data.get('category'), data.get('description'), data.get('contact')]):
-        return jsonify({'success': False, 'message': 'All fields are required'}), 400
-    
-    # Check if user wants to submit to Jansunwai
-    submit_to_jansunwai = data.get('submit_to_jansunwai') == 'yes'
-    
-    # Create new problem record
-    problem = Problem(
-        name=data.get('name').strip(),
-        category=data.get('category'),
-        description=data.get('description').strip(),
-        contact=data.get('contact').strip(),
-        submitted_to_jansunwai=submit_to_jansunwai,
-        jansunwai_link='https://jansunwai.up.nic.in/' if submit_to_jansunwai else None
-    )
-    
     try:
+        data = request.form
+        
+        # Validate form data
+        if not all([data.get('name'), data.get('category'), data.get('description'), data.get('contact')]):
+            return jsonify({'success': False, 'message': 'All fields are required'}), 400
+        
+        # Check if user wants to submit to Jansunwai (checkbox will be 'on' or 'yes' if checked)
+        submit_to_jansunwai = data.get('submit_to_jansunwai') in ('yes', 'on', 'true')
+        
+        # Create new problem record
+        problem = Problem(
+            name=data.get('name').strip(),
+            category=data.get('category'),
+            description=data.get('description').strip(),
+            contact=data.get('contact').strip(),
+            submitted_to_jansunwai=submit_to_jansunwai,
+            jansunwai_link='https://jansunwai.up.nic.in/' if submit_to_jansunwai else None
+        )
+        
         db.session.add(problem)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Problem submitted successfully!'}), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': 'Error submitting problem'}), 500
+        print(f"Error submitting problem: {str(e)}", file=sys.stderr)
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': f'Error submitting problem: {str(e)}'}), 500
 
 
 @main_bp.route('/admin/login', methods=['GET', 'POST'])
@@ -141,6 +145,7 @@ def get_problems():
 
 
 @main_bp.route('/api/problems/<int:problem_id>/status', methods=['PUT'])
+@admin_required
 def update_problem_status(problem_id):
     """Update problem status."""
     problem = Problem.query.get_or_404(problem_id)
@@ -152,14 +157,15 @@ def update_problem_status(problem_id):
     problem.status = data['status']
     db.session.commit()
     
-    return jsonify({'success': True, 'message': 'Status  successfully'})
+    return jsonify({'success': True, 'message': 'Status updated successfully'})
 
 
 @main_bp.route('/api/problems/<int:problem_id>', methods=['DELETE'])
+@admin_required
 def delete_problem(problem_id):
     """Delete a problem."""
     problem = Problem.query.get_or_404(problem_id)
     db.session.delete(problem)
     db.session.commit()
     
-    return jsonify({'success': True, 'message': 'Probhhlem deleted successfully'})
+    return jsonify({'success': True, 'message': 'Problem deleted successfully'})
