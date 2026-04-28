@@ -112,7 +112,7 @@ def update_problem_status(problem_id):
     problem.status = data['status']
     db.session.commit()
     
-    return jsonify({'success': True, 'message': 'Status updated successfully'})
+    return jsonify({'success': True, 'message': 'Status  successfully'})
 
 
 @main_bp.route('/api/problems/<int:problem_id>', methods=['DELETE'])
