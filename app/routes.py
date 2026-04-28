@@ -1,6 +1,7 @@
 """Flask routes for the village portal."""
 
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
+from functools import wraps
 from app import db
 from app.models import Problem
 
@@ -8,6 +9,18 @@ main_bp = Blueprint('main', __name__)
 
 # Problem categories
 CATEGORIES = ['Infrastructure', 'Health', 'Water', 'Education', 'Other']
+
+# Admin password (change this in production!)
+ADMIN_PASSWORD = 'admin123'
+
+# Decorator to check admin access
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'admin' not in session or not session['admin']:
+            return redirect(url_for('main.admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @main_bp.route('/')
@@ -42,7 +55,28 @@ def submit_problem():
         return jsonify({'success': False, 'message': 'Error submitting problem'}), 500
 
 
+@main_bp.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Admin login page."""
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        if password == ADMIN_PASSWORD:
+            session['admin'] = True
+            return redirect(url_for('main.admin_dashboard'))
+        else:
+            return render_template('admin_login.html', error='Invalid password'), 401
+    return render_template('admin_login.html')
+
+
+@main_bp.route('/admin/logout')
+def admin_logout():
+    """Logout admin."""
+    session.pop('admin', None)
+    return redirect(url_for('main.index'))
+
+
 @main_bp.route('/admin')
+@admin_required
 def admin_dashboard():
     """Display admin dashboard with all submitted problems."""
     page = request.args.get('page', 1, type=int)
@@ -74,6 +108,7 @@ def admin_dashboard():
 
 
 @main_bp.route('/api/problems')
+@admin_required
 def get_problems():
     """API endpoint to get all problems as JSON."""
     page = request.args.get('page', 1, type=int)

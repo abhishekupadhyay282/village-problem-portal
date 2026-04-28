@@ -19,6 +19,9 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
+    app.config['SESSION_COOKIE_SECURE'] = False  # Set to True if using HTTPS
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     
     # Initialize database
     db.init_app(app)

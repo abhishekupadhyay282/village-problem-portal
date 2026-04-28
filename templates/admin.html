@@ -9,8 +9,13 @@
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1>📊 Admin Dashboard</h1>
-            <p>Total Problems: <strong>{{ total }}</strong></p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>📊 Admin Dashboard</h1>
+                    <p>Total Problems: <strong>{{ total }}</strong></p>
+                </div>
+                <a href="{{ url_for('main.admin_logout') }}" class="btn btn-danger">Logout</a>
+            </div>
             <a href="/" class="btn btn-secondary">Back to Form</a>
         </div>
 
